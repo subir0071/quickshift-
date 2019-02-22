@@ -31,6 +31,23 @@ git remote add origin https://github.com/$GIT_USER/$MS_NAME.git
 git push origin master
 
 
+oc new-project ${APP_NAME,,}-dev
+oc new-project ${APP_NAME,,}-test
+oc new-project ${APP_NAME,,}-prod
+
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-cicd  # need to change the db name to parameterized in next release
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-dev
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-test
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-prod
+
+oc policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-test:default -n ${APP_NAME,,}-dev
+oc policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-prod:default -n ${APP_NAME,,}-dev
+
+oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-dev
+oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-test
+oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-prod
+
+oc new-app https://github.com/$GIT_USER/$MS_NAME.git --strategy=pipeline --name=spring-pipeline -n ${APP_NAME,,}-cicd
 #curl https://api.github.com -u $GIT_USER:$GIT_PASS
 
 #mkdir -p ref_repo

@@ -1,0 +1,5 @@
+APP_NAME: 'spring-sample-app'
+MS_NAME: 'spring-boot-mongodb-example'
+BRANCH: 'master'
+GIT_SOURCE_URL: 'https://github.com/sourabhgupta385/spring-boot-mongodb-example.git'
+SONAR_HOST_URL: 'http://sonar-spring-sample-app-cicd.apps.na39.openshift.opentlc.com'

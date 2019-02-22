@@ -1,0 +1,50 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: coolstore-pipeline-template
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: mysecret
+      creationTimestamp:
+    data:
+      WebHookSecretKey: c2VjcmV0dmFsdWUx
+  - kind: BuildConfig
+    apiVersion: v1 
+    metadata:
+      name: coolstore-ui-pipeline
+    spec:
+      source:
+        git:
+          uri: ${GIT_SOURCE_URL}
+      strategy:
+        jenkinsPipelineStrategy:
+          env:
+          -  name: APP_TEMPLATE_URL
+             value: ${GIT_TEMPLATE_URL}
+          -  name: APP_NAME
+             value: ${APPLICATION_NAME}
+          -  name: MS_SOURCE_URL
+             value: ${GIT_SOURCE_URL}
+          -  name: MS_NAME
+             value: ${MICROSERVICE_NAME}
+      triggers:
+        -  type: "GitHub"
+           github:
+             secretReference:
+               name: "mysecret"      
+parameters:
+- description: Git source URL for application
+  displayName: Git source repository
+  name: GIT_SOURCE_URL
+  required: true
+- displayName: Git template URL for full aplication
+  name: GIT_TEMPLATE_URL
+  required: true
+- description: The name for the application.
+  name: APPLICATION_NAME
+  required: true
+- description: The name for the microservice.
+  name: MICROSERVICE_NAME
+  required: true  
