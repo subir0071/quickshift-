@@ -1,0 +1,22 @@
+node{
+    
+  def props = readProperties  file:'./test.properties'
+echo "Var1=${Var1}"
+echo "Var2=${Var2}"
+ 
+    stage('First Time Deployment'){
+        script{
+            openshift.withCluster() {
+                openshift.withProject("$APP_NAME-dev") {
+                    def bcSelector = openshift.selector( "bc", "$MS_NAME")
+                    def bcExists = bcSelector.exists()
+                    if (!bcExists) {
+                        openshift.newApp("redhat-openjdk18-openshift:1.1~$GIT_URL","--strategy=source")
+                    } else {
+                        sh 'echo build config already exists in development'  
+                    } 
+                }
+            }
+        }
+    }
+}

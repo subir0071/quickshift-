@@ -1,0 +1,21 @@
+hub-sync(1)    Fetch git objects from upstream and update local branches.   hub-sync(1)
+
+
+
+SYNOPSIS
+       hub sync
+
+       · If the local branch is outdated, fast-forward it;
+       · If the local branch contains unpushed work, warn about it;
+       · If the branch seems merged and its upstream branch was deleted, delete it.
+
+       If a local branch does not have any upstream configuration, but has a same-named
+       branch on the remote, treat that as its upstream branch.
+
+SEE ALSO
+       hub(1), git-fetch(1)
+
+
+
+
+hub version 2.9.0		      13 Feb 2019			    hub-sync(1)

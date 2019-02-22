@@ -1,0 +1,22 @@
+.TH "hub-sync" "1" "13 Feb 2019" "hub version 2.9.0" "Fetch git objects from upstream and update local branches."
+.nh
+.ad l
+.SH "SYNOPSIS"
+.P
+\fB\fChub sync\fR
+.IP \(bu 2.3
+If the local branch is outdated, fast\-forward it;
+.sp -1
+.IP \(bu 2.3
+If the local branch contains unpushed work, warn about it;
+.sp -1
+.IP \(bu 2.3
+If the branch seems merged and its upstream branch was deleted, delete it.
+.br
+.P
+If a local branch does not have any upstream configuration, but has a
+same\-named branch on the remote, treat that as its upstream branch.
+.SH "SEE ALSO"
+.P
+hub(1), git\-fetch(1)
+

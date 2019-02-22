@@ -1,0 +1,28 @@
+hub-delete(1)		Delete an existing repository on GitHub.	  hub-delete(1)
+
+
+
+SYNOPSIS
+       hub delete [-y] [ORGANIZATION/]NAME
+
+OPTIONS
+       -y, --yes
+	   Skip the confirmation prompt and immediately delete the repository.
+
+       [ORGANIZATION/]NAME
+	   The name for the repository on GitHub.
+
+EXAMPLES
+	   $ hub delete recipes
+	   [ personal repo deleted on GitHub ]
+
+	   $ hub delete sinatra/recipes
+	   [ repo deleted in GitHub organization ]
+
+SEE ALSO
+       hub-init(1), hub(1)
+
+
+
+
+hub version 2.9.0		      13 Feb 2019			  hub-delete(1)

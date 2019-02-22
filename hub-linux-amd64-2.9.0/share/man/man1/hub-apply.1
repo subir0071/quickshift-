@@ -1,0 +1,26 @@
+.TH "hub-apply" "1" "13 Feb 2019" "hub version 2.9.0" "Download a patch from GitHub and apply it locally."
+.nh
+.ad l
+.SH "SYNOPSIS"
+.P
+\fB\fChub apply\fR \fIGITHUB\-URL\fP
+.SH "OPTIONS"
+.PP
+\fIGITHUB\-URL\fP
+.RS 4
+A URL to a pull request or commit on GitHub.
+.RE
+.br
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+$ hub apply https://github.com/jingweno/gh/pull/55
+> curl https://github.com/jingweno/gh/pull/55.patch \-o /tmp/55.patch
+> git apply /tmp/55.patch
+.fi
+.RE
+.SH "SEE ALSO"
+.P
+hub\-am(1), hub(1), git\-apply(1)
+

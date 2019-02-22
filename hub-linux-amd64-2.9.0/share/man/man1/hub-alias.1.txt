@@ -1,0 +1,21 @@
+hub-alias(1)	       Show shell instructions for wrapping git.	   hub-alias(1)
+
+
+
+SYNOPSIS
+       hub alias [-s] [SHELL]
+
+OPTIONS
+       -s
+	   Output shell script suitable for eval.
+
+       SHELL
+	   Specify the type of shell (default: "$SHELL" environment variable).
+
+SEE ALSO
+       hub(1)
+
+
+
+
+hub version 2.9.0		      13 Feb 2019			   hub-alias(1)

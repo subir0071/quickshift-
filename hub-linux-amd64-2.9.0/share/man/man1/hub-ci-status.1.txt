@@ -1,0 +1,40 @@
+hub-ci-status(1)     Display status of GitHub checks for a commit.     hub-ci-status(1)
+
+
+
+SYNOPSIS
+       hub ci-status [-v] [COMMIT]
+
+OPTIONS
+       -v, --verbose
+	   Print detailed report of all status checks and their URLs.
+
+       -f, --format FORMAT
+	   Pretty print all status checks using FORMAT (implies --verbose). See the
+	   "PRETTY FORMATS" section of git-log(1) for some additional details on how
+	   placeholders are used in format. The available placeholders for issues are:
+
+	   %U: the URL of this status check
+
+	   %S: check state (e.g. "success", "failure")
+
+	   %sC: set color to red, green, or yellow, depending on state
+
+	   %t: name of the status check
+
+       COMMIT
+	   A commit SHA or branch name (default: "HEAD").
+
+       Possible outputs and exit statuses:
+
+       · success, neutral: 0
+       · failure, error, action_required, cancelled, timed_out: 1
+       · pending: 2
+
+SEE ALSO
+       hub-pull-request(1), hub(1)
+
+
+
+
+hub version 2.9.0		      13 Feb 2019		       hub-ci-status(1)

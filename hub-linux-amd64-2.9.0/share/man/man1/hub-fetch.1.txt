@@ -1,0 +1,21 @@
+hub-fetch(1)	   Add missing remotes prior to performing git fetch.	   hub-fetch(1)
+
+
+
+SYNOPSIS
+       hub fetch USER[,USER2...]
+
+EXAMPLES
+	   $ hub fetch --multiple jingweno mislav
+	   > git remote add jingweno git://github.com/jingweno/REPO.git
+	   > git remote add mislav git://github.com/mislav/REPO.git
+	   > git fetch jingweno
+	   > git fetch mislav
+
+SEE ALSO
+       hub-remote(1), hub(1), git-fetch(1)
+
+
+
+
+hub version 2.9.0		      13 Feb 2019			   hub-fetch(1)
