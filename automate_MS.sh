@@ -36,6 +36,8 @@ oc new-project ${APP_NAME,,}-cicd
 oc project ${APP_NAME,,}"-cicd"
 oc new-app -f jenkins_template.json -e INSTALL_PLUGINS=credentials,matrix-auth,configuration-as-code-support,sonar,nodejs,ssh-credentials -e CASC_JENKINS_CONFIG=https://raw.githubusercontent.com/$GIT_USER/$MS_NAME/master/jenkins_config.yaml
 
+oc new-app -f sonarqube-ephemeral-template.json 
+exit
 oc new-project ${APP_NAME,,}-dev
 oc new-project ${APP_NAME,,}-test
 oc new-project ${APP_NAME,,}-prod
