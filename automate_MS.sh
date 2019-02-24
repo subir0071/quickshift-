@@ -7,8 +7,7 @@ source ./automate_MS.properties
 oc login https://master.na39.openshift.opentlc.com --token=$OPENSHIFT_LOGIN_TOKEN
 oc new-project ${APP_NAME,,}-cicd
 oc new-app -f sonarqube-ephemeral-template.json
-SONAR_URL=`oc get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
-echo "Sonar qube URL :"$SONAR_URL
+SONAR_URL='http://'`oc get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
 
 curl -u $GIT_USER:$GIT_PASS https://api.github.com/user/repos -d '{"name":"'$MS_NAME'","description":"This repo created by acclerator"}'
 
@@ -54,4 +53,6 @@ oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins
 
 
 oc new-app https://github.com/$GIT_USER/$MS_NAME.git --strategy=pipeline --name=${APP_NAME,,}app-pipeline -n ${APP_NAME,,}-cicd
+
+rm -rf ref_repo/$MS_NAME
 
