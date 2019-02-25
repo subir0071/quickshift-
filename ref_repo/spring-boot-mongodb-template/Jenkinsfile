@@ -118,7 +118,14 @@ node
    stage('Code Coverage')
    {
 	sh 'mvn package'
+jacoco(deltaBranchCoverage: '10', deltaClassCoverage: '10', deltaComplexityCoverage: '10', deltaInstructionCoverage: '10', deltaLineCoverage: '10', deltaMethodCoverage: '20')
    }
+
+   stage('Security Scanning')
+    {
+        sh 'mvn findbugs:findbugs'
+    }
+
 
    stage('Dev - Build Application')
    {
@@ -157,11 +164,6 @@ node
 	 }
     }
 	
-    stage('Security Testing')
-    {
-        sh 'mvn findbugs:findbugs'
-    }	
-
     stage('Tagging Image for Testing')
     {
         openshiftTag(namespace: '$APP_NAME-dev', srcStream: '$MS_NAME', srcTag: 'latest', destStream: '$MS_NAME', destTag: 'prod')
