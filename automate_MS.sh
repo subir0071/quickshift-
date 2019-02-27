@@ -27,7 +27,7 @@ cd ref_repo/$MS_NAME/
 git config --global user.name "$GIT_USER"
 git config --global user.password "GIT_PASS"
 git init
-git remote add origin https://github.com/$GIT_USER/$MS_NAME.git
+git remote add origin https://$GIT_USER:$GITHUB_TOKEN@github.com/$GIT_USER/$MS_NAME.git
 git add .
 git commit -m "initial commit"
 git push origin master
