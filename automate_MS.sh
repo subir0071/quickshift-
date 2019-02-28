@@ -9,7 +9,7 @@ oc new-project ${APP_NAME,,}-cicd
 oc new-app -f sonarqube-ephemeral-template.json
 SONAR_URL='http://'`oc get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
 
-curl -u $GIT_USER:$GIT_PASS https://api.github.com/user/repos -d '{"name":"'$MS_NAME'","description":"This repo created by acclerator"}'
+curl -k -H "Authorization: Bearer fba7d22a2ca2f007efe200c7f6c244ec0e417719" https://api.github.com/user/repos -d '{"name":"'$MS_NAME'","description":"This repo created by acclerator"}'
 
 mkdir -p ./ref_repo/$MS_NAME
 cp -r ref_repo/spring-boot-mongodb-template/* ref_repo/$MS_NAME/
@@ -24,8 +24,6 @@ SONAR_HOST_URL: $SONAR_URL
 EOF
 
 cd ref_repo/$MS_NAME/
-git config --global user.name "$GIT_USER"
-git config --global user.password "GIT_PASS"
 git init
 git remote add origin https://$GIT_USER:$GITHUB_TOKEN@github.com/$GIT_USER/$MS_NAME.git
 git add .
