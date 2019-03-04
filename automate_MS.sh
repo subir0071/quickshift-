@@ -1,6 +1,7 @@
 #!/bin/sh
-
 set -e
+cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
 
 for key in "$@"
 do
