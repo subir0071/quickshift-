@@ -2,26 +2,26 @@
     "apiVersion": "v1",
     "kind": "Template",
     "labels": {
-        "app": "jenkins-persistent",
-        "template": "jenkins-persistent-template"
+        "app": "jenkins-ephemeral",
+        "template": "jenkins-ephemeral-template"
     },
     "message": "A Jenkins service has been created in your project.  Log into Jenkins with your OpenShift account.  The tutorial at https://github.com/openshift/origin/blob/master/examples/jenkins/README.md contains more information about using this template.",
     "metadata": {
         "annotations": {
-            "description": "Jenkins service, with persistent storage.\n\nNOTE: You must have persistent volumes available in your cluster to use this template.",
+            "description": "Jenkins service, without persistent storage.\n\nWARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.",
             "iconClass": "icon-jenkins",
-            "openshift.io/display-name": "Jenkins",
+            "openshift.io/display-name": "Jenkins (Ephemeral)",
             "openshift.io/documentation-url": "https://docs.okd.io/latest/using_images/other_images/jenkins.html",
-            "openshift.io/long-description": "This template deploys a Jenkins server capable of managing OpenShift Pipeline builds and supporting OpenShift-based oauth login.",
+            "openshift.io/long-description": "This template deploys a Jenkins server capable of managing OpenShift Pipeline builds and supporting OpenShift-based oauth login.  The Jenkins configuration is stored in non-persistent storage, so this configuration should be used for experimental purposes only.",
             "openshift.io/provider-display-name": "Red Hat, Inc.",
             "openshift.io/support-url": "https://access.redhat.com",
             "tags": "instant-app,jenkins"
         },
-        "name": "jenkins-persistent"
+        "name": "jenkins-ephemeral"
     },
     "objects": [
         {
-            "apiVersion": "route.openshift.io/v1",
+            "apiVersion": "v1",
             "kind": "Route",
             "metadata": {
                 "annotations": {
@@ -43,23 +43,6 @@
         },
         {
             "apiVersion": "v1",
-            "kind": "PersistentVolumeClaim",
-            "metadata": {
-                "name": "${JENKINS_SERVICE_NAME}"
-            },
-            "spec": {
-                "accessModes": [
-                    "ReadWriteOnce"
-                ],
-                "resources": {
-                    "requests": {
-                        "storage": "${VOLUME_CAPACITY}"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "apps.openshift.io/v1",
             "kind": "DeploymentConfig",
             "metadata": {
                 "annotations": {
@@ -113,10 +96,6 @@
                                     {
                                         "name": "JNLP_SERVICE_NAME",
                                         "value": "${JNLP_SERVICE_NAME}"
-                                    },
-                                    {
-                                        "name": "ENABLE_FATAL_ERROR_LOG_FILE",
-                                        "value": "${ENABLE_FATAL_ERROR_LOG_FILE}"
                                     }
                                 ],
                                 "image": " ",
@@ -142,8 +121,7 @@
                                 },
                                 "resources": {
                                     "limits": {
-                                        "memory": "${MEMORY_LIMIT}",
-                                        "cpu": "2500m"
+                                        "memory": "${MEMORY_LIMIT}"
                                     }
                                 },
                                 "securityContext": {
@@ -164,10 +142,10 @@
                         "serviceAccountName": "${JENKINS_SERVICE_NAME}",
                         "volumes": [
                             {
-                                "name": "${JENKINS_SERVICE_NAME}-data",
-                                "persistentVolumeClaim": {
-                                    "claimName": "${JENKINS_SERVICE_NAME}"
-                                }
+                                "emptyDir": {
+                                    "medium": ""
+                                },
+                                "name": "${JENKINS_SERVICE_NAME}-data"
                             }
                         ]
                     }
@@ -205,7 +183,7 @@
             }
         },
         {
-            "apiVersion": "authorization.openshift.io/v1",
+            "apiVersion": "v1",
             "groupNames": null,
             "kind": "RoleBinding",
             "metadata": {
@@ -295,14 +273,7 @@
             "description": "Maximum amount of memory the container can use.",
             "displayName": "Memory Limit",
             "name": "MEMORY_LIMIT",
-            "value": "2Gi"
-        },
-        {
-            "description": "Volume space available for data, e.g. 512Mi, 2Gi.",
-            "displayName": "Volume Capacity",
-            "name": "VOLUME_CAPACITY",
-            "required": true,
-            "value": "1Gi"
+            "value": "3Gi"
         },
         {
             "description": "The OpenShift Namespace where the Jenkins ImageStream resides.",
@@ -321,12 +292,6 @@
             "displayName": "Jenkins ImageStreamTag",
             "name": "JENKINS_IMAGE_STREAM_TAG",
             "value": "jenkins:latest"
-        },
-        {
-            "description": "When a fatal error occurs, an error log is created with information and the state obtained at the time of the fatal error.",
-            "displayName": "Fatal Error Log File",
-            "name": "ENABLE_FATAL_ERROR_LOG_FILE",
-            "value": "false"
         }
     ]
 }
