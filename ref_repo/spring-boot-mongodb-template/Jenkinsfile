@@ -109,7 +109,8 @@ podTemplate(cloud:'openshift',label: 'selenium',
 	   {
 		   sh 'mvn clean compile'
 	   }
-
+		
+	   }
 	   stage('Code Quality Analysis')
 	   {
 		   sh 'mvn sonar:sonar -Dsonar.host.url="${SONAR_HOST_URL}"'
@@ -129,7 +130,6 @@ podTemplate(cloud:'openshift',label: 'selenium',
 	   stage('Security Scanning')
 	   {
 		  sh 'mvn spotbugs:check'  // findbugs:findbugs
-	   }
 
 
 	   stage('Dev - Build Application')
