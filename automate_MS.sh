@@ -40,14 +40,13 @@ case $key in
     ;;
 esac
 done
-
 DEFAULT_APP_NAME=demo
 DEFAULT_MS_CNT=1
-DEFAULT_GIT_USER=himanshumps
+DEFAULT_GIT_USER=subir0071
 DEFAULT_MS_NAME=cart-service
-DEFAULT_OPENSHIFT_LOGIN_TOKEN=lyNl_jiZgLIaAlPS6ezcNovO076f5R8SobSykfKvZB
-DEFAULT_OPENSHIFT_SERVER=https://master.na39.openshift.opentlc.com
-DEFAULT_GITHUB_TOKEN=`echo 'OTgwYjhjMTU0NjI4NDJjMGVlMTc0OWJmNTU5YTMyNTg1MjI4NDA2ZA==' | base64 --decode`
+DEFAULT_OPENSHIFT_LOGIN_TOKEN=ZVAKq2Zn2eIErQhMlrJbHo1XNDIxhCB6A8tYkJrepUA
+DEFAULT_OPENSHIFT_SERVER=https://masterdnsj2p5wq2nzrzvo.southindia.cloudapp.azure.com:443
+DEFAULT_GITHUB_TOKEN=`echo 'NTg4OGYyMjA1YzcwYmUwYzY2ZWQ2NzllYTI4MGJjZjJkODYzNDU5MQ==' | base64 --decode`
 
 export APP_NAME=${APP_NAME:-${DEFAULT_APP_NAME}}
 export MS_CNT=${MS_CNT:-${DEFAULT_MS_CNT}}
@@ -59,10 +58,10 @@ export GITHUB_TOKEN=${GITHUB_TOKEN:-${DEFAULT_GITHUB_TOKEN}}
 
 
 
-$OC_PATH login $OPENSHIFT_SERVER --token=$OPENSHIFT_LOGIN_TOKEN --insecure-skip-tls-verify=true
-$OC_PATH new-project ${APP_NAME,,}-cicd
-$OC_PATH new-app -f sonarqube-ephemeral-template.json -n ${APP_NAME,,}-cicd
-SONAR_URL='http://'`$OC_PATH get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
+oc login $OPENSHIFT_SERVER --token=$OPENSHIFT_LOGIN_TOKEN --insecure-skip-tls-verify=true
+oc new-project ${APP_NAME,,}-cicd
+oc new-app -f sonarqube-ephemeral-template.json -n ${APP_NAME,,}-cicd
+SONAR_URL='http://'`oc get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
 
 curl -k -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/user/repos -d '{"name":"'$MS_NAME'","description":"This repo created by acclerator"}'
 
@@ -88,26 +87,26 @@ git remote add origin https://$GIT_USER:$GITHUB_TOKEN@github.com/$GIT_USER/$MS_N
 git push origin master
 cd ../..
 
-$OC_PATH new-app -f jenkins_template.json -e INSTALL_PLUGINS=configuration-as-code-support,credentials:2.1.16,matrix-auth:2.3,sonar,nodejs,ssh-credentials,jacoco -e CASC_JENKINS_CONFIG=https://raw.githubusercontent.com/$GIT_USER/$MS_NAME/master/jenkins_config.yaml -e OVERRIDE_PV_PLUGINS_WITH_IMAGE_PLUGINS=true -n ${APP_NAME,,}-cicd
+oc new-app -f jenkins_template.json -e INSTALL_PLUGINS=configuration-as-code-support,credentials:2.1.16,matrix-auth:2.3,sonar,nodejs,ssh-credentials,jacoco -e CASC_JENKINS_CONFIG=https://raw.githubusercontent.com/$GIT_USER/$MS_NAME/master/jenkins_config.yaml -e OVERRIDE_PV_PLUGINS_WITH_IMAGE_PLUGINS=true -n ${APP_NAME,,}-cicd
 
-$OC_PATH new-project ${APP_NAME,,}-dev
-$OC_PATH new-project ${APP_NAME,,}-test
-$OC_PATH new-project ${APP_NAME,,}-prod
+oc new-project ${APP_NAME,,}-dev
+oc new-project ${APP_NAME,,}-test
+oc new-project ${APP_NAME,,}-prod
 
-$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-cicd  # need to change the db name to parameterized in next release
-$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-dev
-$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-test
-$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-prod
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-cicd  # need to change the db name to parameterized in next release
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-dev
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-test
+oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-prod
 
-$OC_PATH policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-test:default -n ${APP_NAME,,}-dev
-$OC_PATH policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-prod:default -n ${APP_NAME,,}-dev
+oc policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-test:default -n ${APP_NAME,,}-dev
+oc policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-prod:default -n ${APP_NAME,,}-dev
 
-$OC_PATH policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-dev
-$OC_PATH policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-test
-$OC_PATH policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-prod
+oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-dev
+oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-test
+oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-prod
 
 
-$OC_PATH new-app https://github.com/$GIT_USER/$MS_NAME.git --strategy=pipeline --name=${APP_NAME,,}app-pipeline -n ${APP_NAME,,}-cicd
+oc new-app https://github.com/$GIT_USER/$MS_NAME.git --strategy=pipeline --name=${APP_NAME,,}app-pipeline -n ${APP_NAME,,}-cicd
 
 rm -rf ref_repo/$MS_NAME
 
