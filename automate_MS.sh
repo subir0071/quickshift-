@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
-
+OC_PATH=oc
 for key in "$@"
 do
 case $key in
@@ -58,10 +58,10 @@ export GITHUB_TOKEN=${GITHUB_TOKEN:-${DEFAULT_GITHUB_TOKEN}}
 
 
 
-oc login $OPENSHIFT_SERVER --token=$OPENSHIFT_LOGIN_TOKEN --insecure-skip-tls-verify=true
-oc new-project ${APP_NAME,,}-cicd
-oc new-app -f sonarqube-ephemeral-template.json -n ${APP_NAME,,}-cicd
-SONAR_URL='http://'`oc get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
+$OC_PATH login $OPENSHIFT_SERVER --token=$OPENSHIFT_LOGIN_TOKEN --insecure-skip-tls-verify=true
+$OC_PATH new-project ${APP_NAME,,}-cicd
+$OC_PATH new-app -f sonarqube-ephemeral-template.json -n ${APP_NAME,,}-cicd
+SONAR_URL='http://'`$OC_PATH get route/sonar | tr -s ' ' | cut -d ' ' -f2|tail -1`
 
 curl -k -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/user/repos -d '{"name":"'$MS_NAME'","description":"This repo created by acclerator"}'
 
@@ -87,26 +87,25 @@ git remote add origin https://$GIT_USER:$GITHUB_TOKEN@github.com/$GIT_USER/$MS_N
 git push origin master
 cd ../..
 
-oc new-app -f jenkins_template.json -e INSTALL_PLUGINS=configuration-as-code-support,credentials:2.1.16,matrix-auth:2.3,sonar,nodejs,ssh-credentials,jacoco -e CASC_JENKINS_CONFIG=https://raw.githubusercontent.com/$GIT_USER/$MS_NAME/master/jenkins_config.yaml -e OVERRIDE_PV_PLUGINS_WITH_IMAGE_PLUGINS=true -n ${APP_NAME,,}-cicd
+$OC_PATH new-app -f jenkins_template.json -e INSTALL_PLUGINS=configuration-as-code-support,credentials:2.1.16,matrix-auth:2.3,sonar,nodejs,ssh-credentials,jacoco -e CASC_JENKINS_CONFIG=https://raw.githubusercontent.com/$GIT_USER/$MS_NAME/master/jenkins_config.yaml -e OVERRIDE_PV_PLUGINS_WITH_IMAGE_PLUGINS=true -n ${APP_NAME,,}-cicd
 
-oc new-project ${APP_NAME,,}-dev
-oc new-project ${APP_NAME,,}-test
-oc new-project ${APP_NAME,,}-prod
+$OC_PATH new-project ${APP_NAME,,}-dev
+$OC_PATH new-project ${APP_NAME,,}-test
+$OC_PATH new-project ${APP_NAME,,}-prod
 
-oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-cicd  # need to change the db name to parameterized in next release
-oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-dev
-oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-test
-oc new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-prod
+$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-cicd  # need to change the db name to parameterized in next release
+$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-dev
+$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-test
+$OC_PATH new-app mongo:3.4 --name=orders-db -n ${APP_NAME,,}-prod
 
-oc policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-test:default -n ${APP_NAME,,}-dev
-oc policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-prod:default -n ${APP_NAME,,}-dev
+$OC_PATH policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-test:default -n ${APP_NAME,,}-dev
+$OC_PATH policy add-role-to-user system:image-puller system:serviceaccount:${APP_NAME,,}-prod:default -n ${APP_NAME,,}-dev
 
-oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-dev
-oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-test
-oc policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-prod
+$OC_PATH policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-dev
+$OC_PATH policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-test
+$OC_PATH policy add-role-to-user edit system:serviceaccount:${APP_NAME,,}-cicd:jenkins -n ${APP_NAME,,}-prod
 
 
-oc new-app https://github.com/$GIT_USER/$MS_NAME.git --strategy=pipeline --name=${APP_NAME,,}app-pipeline -n ${APP_NAME,,}-cicd
+$OC_PATH new-app https://github.com/$GIT_USER/$MS_NAME.git --strategy=pipeline --name=${APP_NAME,,}app-pipeline -n ${APP_NAME,,}-cicd
 
 rm -rf ref_repo/$MS_NAME
-
